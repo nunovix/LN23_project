@@ -16,6 +16,11 @@ fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/mix2num
                      fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
 
 
+fstconcat compiled/month.fst compiled/slash.fst > compiled/aux1.fst
+fstconcat compiled/aux1.fst compiled/day.fst > compiled/aux2.fst
+fstconcat compiled/aux2.fst compiled/slash.fst > compiled/aux3.fst
+fstconcat compiled/aux3.fst compiled/comma.fst > compiled/aux4.fst
+fstconcat compiled/aux4.fst compiled/year.fst > compiled/datenum2text.fst
 
 # ############ generate PDFs  ############
 echo "Starting to generate PDFs"
@@ -35,8 +40,9 @@ echo "Testing mmm2mm (the output is a transducer: fst and pdf)"
 echo "***********************************************************"
 for w in compiled/t-*.fst; do
     fstcompose $w compiled/mmm2mm.fst | fstshortestpath | fstproject --project_type=output |
-                  fstrmepsilon | fsttopsort > compiled/$(basename $i ".fst")-out.fst
+                  fstrmepsilon | fsttopsort > compiled/$(basename $w ".fst")-out.fst
 done
+
 for i in compiled/t-*-out.fst; do
 	echo "Creating image: images/$(basename $i '.fst').pdf"
    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
@@ -93,5 +99,51 @@ for w in "JAN/1/2018" "FEB/1/2018" "MAR/01/2018" "APR/01/2018" "MAY/01/2018" "JU
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
     echo "$w = $res"
 done
+
+trans=day.fst
+echo "\n***********************************************************"
+echo "Testing day  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "1" "02" "03" "4" "5" "6" "07" "08" "9" "10" "11" "14" "20" "22" "27" "30" "31"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+
+trans=month.fst
+echo "\n***********************************************************"
+echo "Testing month  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "1" "02" "03" "4" "5" "6" "07" "08" "9" "10" "11" "12"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=year.fst
+echo "\n***********************************************************"
+echo "Testing year  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "2001" "2007" "2010" "2020" "2023" "2024" "2056" "2015" "2099" "2050" "2033" "2019"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=datenum2text.fst
+echo "\n***********************************************************"
+echo "Testing datenum2text  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "09/15/2001" "10/10/2007" "1/1/2001" "1/02/2020" "08/2/2099"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
 
 echo "\nThe end"

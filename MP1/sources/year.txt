@@ -1,0 +1,40 @@
+0   1   2   two
+
+1   2   0   thousand
+
+2   3   eps and
+
+3   4   0   eps
+3   4   2   twenty
+3   4   3   thirty
+3   4   4   forty
+3   4   5   fifty
+3   4   6   sixty
+3   4   7   seventy
+3   4   8   eighty
+3   4   9   ninety
+
+4   6   0   eps
+4   6   1   one
+4   6   2   two
+4   6   3   three
+4   6   4   four
+4   6   5   five
+4   6   6   six
+4   6   7   seven
+4   6   8   eight
+4   6   9   nine
+
+3   5   1   eps
+
+5   6   0   ten 
+5   6   1   eleven
+5   6   2   twelve
+5   6   3   thirteen
+5   6   4   fourteen
+5   6   5   fifteen
+5   6   6   sixteen
+5   6   7   seventeen
+5   6   8   eighteen
+5   6   9   nineteen
+6
