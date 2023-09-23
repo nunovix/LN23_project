@@ -12,15 +12,8 @@ done
 
 # ############ CORE OF THE PROJECT  ############
 
-
-
-
-
-
-
-
-
-
+fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/mix2numerical.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                     fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
 
 
 
@@ -38,10 +31,10 @@ done
 
 #1 - generates files
 echo "\n***********************************************************"
-echo "Testing 4 (the output is a transducer: fst and pdf)"
+echo "Testing mmm2mm (the output is a transducer: fst and pdf)"
 echo "***********************************************************"
 for w in compiled/t-*.fst; do
-    fstcompose $w compiled/n2text.fst | fstshortestpath | fstproject --project_type=output |
+    fstcompose $w compiled/mmm2mm.fst | fstshortestpath | fstproject --project_type=output |
                   fstrmepsilon | fsttopsort > compiled/$(basename $i ".fst")-out.fst
 done
 for i in compiled/t-*-out.fst; do
@@ -49,14 +42,25 @@ for i in compiled/t-*-out.fst; do
    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
 done
 
-
 #2 - present the output as an acceptor
 echo "\n***********************************************************"
-echo "Testing 1 2 3 4 (output is a acceptor)"
+echo "Testing mmm2mm (output is a acceptor)"
 echo "***********************************************************"
-trans=n2text.fst
+trans=mmm2mm.fst
 echo "\nTesting $trans"
-for w in "1" "2" "3" "4"; do
+for w in "JAN" "FEB" "MAR" "APR" "MAY" "JUN" "JUL" "AUG" "SEP" "OCT" "NOV" "DEC"; do
+    echo "\t $w"
+    python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                     fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                     fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=syms.txt
+done
+
+echo "\n***********************************************************"
+echo "Testing mix2numerical (output is a acceptor)"
+echo "***********************************************************"
+trans=mix2numerical.fst
+echo "\nTesting $trans"
+for w in "JAN/9/2020"; do
     echo "\t $w"
     python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                      fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
@@ -68,11 +72,22 @@ fst2word() {
 	awk '{if(NF>=3){printf("%s",$3)}}END{printf("\n")}'
 }
 
-trans=n2text.fst
+trans=mmm2mm.fst
 echo "\n***********************************************************"
-echo "Testing 5 6 7 8  (output is a string  using 'syms-out.txt')"
+echo "Testing mmm2mm  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in 5 6 7 8; do
+for w in "JAN" "FEB" "MAR" "APR" "MAY" "JUN" "JUL" "AUG" "SEP" "OCT" "NOV" "DEC"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=mix2numerical.fst
+echo "\n***********************************************************"
+echo "Testing mix2numerical  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "JAN/1/2018" "FEB/1/2018" "MAR/01/2018" "APR/01/2018" "MAY/01/2018" "JUN/01/2018" "JUL/01/2018" "AUG/01/2018" "SEP/01/2018" "OCT/01/2018" "NOV/01/2018" "DEC/01/2018"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
