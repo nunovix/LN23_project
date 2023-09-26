@@ -13,8 +13,8 @@ done
 # ############ CORE OF THE PROJECT  ############
 
 # mix2numerical.fst contains de compact transducer that then is created with the python script  compact2fst
-fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/mix2numerical.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
-                     fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
+fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/mix2numerical.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | 
+                    fstarcsort |  fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
 
 
 # concatenations to join the month, day and year transducers, comma and slash transducers needed for formatting
