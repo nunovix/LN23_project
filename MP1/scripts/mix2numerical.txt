@@ -1,5 +1,6 @@
 0	1	/	/
-1	2	digito	=
+1	2	0   0
+1	2	1   1
 1   2   eps eps
 2	3	digito	=
 3	4	/	/
