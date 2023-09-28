@@ -50,6 +50,8 @@ fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst > compiled/aux8.
 # union do que faz em ingles e do que faz em portugues
 fstunion compiled/aux7.fst compiled/aux8.fst > compiled/mix2text.fst
 
+fstunion compiled/mix2text.fst compiled/datenum2text.fst > compiled/date2text.fst
+
 #fstunion compiled/pt2en.fst compiled/skip.fst | fstrmespsilon > compiled/tiagoaux1.fst
 #fstcompose compiled/tiagoaux1.fst compiled/mix2numerical.fst > compiled/tiagoaux2.fst
 #fstcompose compiled/tiagoaux2.fst compiled/datenum2text.fst > compiled/mix2text.fst
@@ -185,6 +187,17 @@ echo "\n***********************************************************"
 echo "Testing mix2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
 for w in "JAN/15/2001" "FEV/10/2007" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=date2text.fst
+echo "\n***********************************************************"
+echo "Testing date2text  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "02/15/2001" "FEV/10/2007" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099" "12/2/2099" "3/2/2099" "03/2/2099" "MAR/2/2099" "ABR/2/2099" "APR/2/2099"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
