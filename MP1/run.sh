@@ -17,6 +17,14 @@ fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa
                     fstarcsort |  fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
 
 
+# answer to b) We first concatenate the transpt2en.fst the same way as before. To translate from English to Portuguese we invert the transpt2en.fst generated and concatenate the result like before.
+fstconcat compiled/transpt2en.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) > compiled/pt2en.fst
+
+fstinvert compiled/transpt2en.fst > compiled/transen2pt.fst
+fstconcat compiled/transen2pt.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) > compiled/en2pt.fst
+
+
+
 # concatenations to join the month, day and year transducers, comma and slash transducers needed for formatting
 fstconcat compiled/month.fst compiled/slash.fst > compiled/aux1.fst
 fstconcat compiled/aux1.fst compiled/day.fst > compiled/aux2.fst
