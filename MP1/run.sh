@@ -12,6 +12,7 @@ done
 
 # ############ CORE OF THE PROJECT  ############
 
+
 # mix2numerical.fst contains de compact transducer that then is created with the python script  compact2fst
 fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | 
                     fstarcsort |  fstrmepsilon | fsttopsort) > compiled/mix2numerical.fst
@@ -31,6 +32,18 @@ fstconcat compiled/aux1.fst compiled/day.fst > compiled/aux2.fst
 fstconcat compiled/aux2.fst compiled/slash.fst > compiled/aux3.fst
 fstconcat compiled/aux3.fst compiled/comma.fst > compiled/aux4.fst
 fstconcat compiled/aux4.fst compiled/year.fst > compiled/datenum2text.fst
+
+
+#answer to d)
+
+fstcompose compiled/pt2en.fst compiled/mix2numerical.fst | fstarcsort | fsttopsort| fstrmepsilon > compiled/tiagoaux5.fst
+
+#fstunion compiled/pt2en.fst compiled/skip.fst | fstrmespsilon > compiled/tiagoaux1.fst
+#fstcompose compiled/tiagoaux1.fst compiled/mix2numerical.fst > compiled/tiagoaux2.fst
+#fstcompose compiled/tiagoaux2.fst compiled/datenum2text.fst > compiled/mix2text.fst
+#this works fine
+# fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst | fstarcsort | fsttopsort| fstrmepsilon > compiled/tiagoaux5.fst
+
 
 # ############ generate PDFs  ############
 echo "Starting to generate PDFs"
