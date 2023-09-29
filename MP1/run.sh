@@ -24,6 +24,7 @@ fstconcat compiled/transpt2en.fst compiled/dd_aaaa.fst > compiled/pt2en.fst
 #fstinvert compiled/transpt2en.fst > compiled/transen2pt.fst
 #fstconcat compiled/transen2pt.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) > compiled/en2pt.fst
 
+### vê se pode ficar assim
 # acho que isto chega porque os outros arcos são todos iguais
 fstinvert compiled/pt2en.fst > compiled/en2pt.fst
 
@@ -41,14 +42,23 @@ fstconcat compiled/aux4.fst compiled/year.fst > compiled/datenum2text.fst
 #answer to d)
 
 #compose das parted que tratam do mês (pt2en e mmm2mm)
-fstcompose compiled/transpt2en.fst compiled/mmm2mm.fst > compiled/aux5.fst
-fstconcat compiled/aux5.fst compiled/dd_aaaa.fst | fstrmepsilon | fsttopsort > compiled/aux6.fst
+#fstcompose compiled/transpt2en.fst compiled/mmm2mm.fst > compiled/aux5.fst
+#fstconcat compiled/aux5.fst compiled/dd_aaaa.fst | fstrmepsilon | fsttopsort > compiled/aux6.fst
+
+# transducer that deals with a date in portuguese
+# composition of pt2en, mix2numerical and datnum2text
+fstcompose compiled/pt2en.fst compiled/mix2numerical.fst > compiled/aux6.fst
 fstcompose compiled/aux6.fst compiled/datenum2text.fst > compiled/aux7.fst
+
+# transducer that deals with a date in english
+# composition of mix2numerical (which input is in english) and datenum2text
 fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst > compiled/aux8.fst
 
-# union do que faz em ingles e do que faz em portugues
+# union of the tranducers that deals with the dates in english and portuguese
 fstunion compiled/aux7.fst compiled/aux8.fst > compiled/mix2text.fst
 
+# union of the transducer that accepts a data in either english or portugues
+# with datenum2text
 fstunion compiled/mix2text.fst compiled/datenum2text.fst > compiled/date2text.fst
 
 #fstunion compiled/pt2en.fst compiled/skip.fst | fstrmespsilon > compiled/tiagoaux1.fst
