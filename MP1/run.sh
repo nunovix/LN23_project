@@ -146,7 +146,29 @@ trans=mix2numerical.fst
 echo "\n***********************************************************"
 echo "Testing mix2numerical  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "JAN/1/2018" "FEB/1/2018" "MAR/01/2018" "APR/01/2018" "MAY/01/2018" "JUN/01/2018" "JUL/01/2018" "AUG/01/2018" "SEP/01/2018" "OCT/01/2018" "NOV/01/2018" "DEC/01/2018"; do
+for w in "JUN/8/2018" "AUG/05/2018" "MAR/01/2018" "APR/01/2018" "MAY/01/2018" "JUN/01/2018" "JUL/01/2018" "AUG/01/2018" "SEP/01/2018" "OCT/01/2018" "NOV/01/2018" "DEC/01/2018"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=en2pt.fst
+echo "\n***********************************************************"
+echo "Testing en2pt  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "JUN/08/2018" "AUG/05/2018"; do
+    res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
+                       fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
+                       fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
+    echo "$w = $res"
+done
+
+trans=pt2en.fst
+echo "\n***********************************************************"
+echo "Testing pt2en  (output is a string  using 'syms-out.txt')"
+echo "***********************************************************"
+for w in "JUN/08/2018" "AGO/05/2018"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
@@ -191,7 +213,7 @@ trans=datenum2text.fst
 echo "\n***********************************************************"
 echo "Testing datenum2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "09/15/2001" "10/10/2007" "1/1/2001" "1/02/2020" "08/2/2099"; do
+for w in "08/5/2018" "6/8/2018" "1/1/2001" "1/02/2020" "08/2/2099"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
@@ -202,7 +224,7 @@ trans=mix2text.fst
 echo "\n***********************************************************"
 echo "Testing mix2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "JAN/15/2001" "FEV/10/2007" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099"; do
+for w in "AGO/5/2018" "JUN/08/2018" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
@@ -213,7 +235,7 @@ trans=date2text.fst
 echo "\n***********************************************************"
 echo "Testing date2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "02/15/2001" "FEV/10/2007" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099" "12/2/2099" "3/2/2099" "03/2/2099" "MAR/2/2099" "ABR/2/2099" "APR/2/2099"; do
+for w in "08/5/2018" "JUN/08/2018" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099" "12/2/2099" "3/2/2099" "03/2/2099" "MAR/2/2099" "ABR/2/2099" "APR/2/2099"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
