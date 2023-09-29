@@ -13,14 +13,13 @@ done
 # ############ CORE OF THE PROJECT  ############
 
 # a)
-# mix2numerical.fst contains de compact transducer that then is created with the python script  compact2fst
-fstconcat compiled/mmm2mm.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | 
-                     fstrmepsilon | fsttopsort) |  fstrmepsilon | fsttopsort > compiled/mix2numerical.fst
+# the transducer dd_aaa.fst deals with the day and year parts (not changing them)
+fstconcat compiled/mmm2mm.fst compiled/dd_aaaa.fst > compiled/mix2numerical.fst
 
 
 ####################################
 # answer to b) We first concatenate the transpt2en.fst the same way as before. To translate from English to Portuguese we invert the transpt2en.fst generated and concatenate the result like before.
-fstconcat compiled/transpt2en.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) | fstrmepsilon | fsttopsort > compiled/pt2en.fst
+fstconcat compiled/transpt2en.fst compiled/dd_aaaa.fst > compiled/pt2en.fst
 
 #fstinvert compiled/transpt2en.fst > compiled/transen2pt.fst
 #fstconcat compiled/transen2pt.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) > compiled/en2pt.fst
@@ -43,7 +42,7 @@ fstconcat compiled/aux4.fst compiled/year.fst > compiled/datenum2text.fst
 
 #compose das parted que tratam do mês (pt2en e mmm2mm)
 fstcompose compiled/transpt2en.fst compiled/mmm2mm.fst > compiled/aux5.fst
-fstconcat compiled/aux5.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) | fstrmepsilon | fsttopsort > compiled/aux6.fst
+fstconcat compiled/aux5.fst compiled/dd_aaaa.fst | fstrmepsilon | fsttopsort > compiled/aux6.fst
 fstcompose compiled/aux6.fst compiled/datenum2text.fst > compiled/aux7.fst
 fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst > compiled/aux8.fst
 
@@ -57,6 +56,13 @@ fstunion compiled/mix2text.fst compiled/datenum2text.fst > compiled/date2text.fs
 #fstcompose compiled/tiagoaux2.fst compiled/datenum2text.fst > compiled/mix2text.fst
 #this works fine
 # fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst | fstarcsort | fsttopsort| fstrmepsilon > compiled/tiagoaux5.fst
+
+
+## Delete auxiliary transducers
+for i in compiled/aux*; do
+	echo "Deleting: $i"
+    rm $i
+done
 
 
 # ############ generate PDFs  ############
@@ -76,7 +82,7 @@ echo "\n***********************************************************"
 echo "Testing datenum2text (the output is a transducer: fst and pdf)"
 echo "***********************************************************"
 for w in compiled/t-*.fst; do
-    fstcompose $w compiled/datenum2text.fst | fstshortestpath | fstproject --project_type=output |
+    fstcompose $w compiled/date2text.fst | fstshortestpath | fstproject --project_type=output |
                   fstrmepsilon | fsttopsort > compiled/$(basename $w ".fst")-out.fst
 done
 
