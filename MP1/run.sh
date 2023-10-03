@@ -11,23 +11,21 @@ for i in sources/*.txt tests/*.txt; do
 done
 
 # ############ CORE OF THE PROJECT  ############
-
-
+####################################
 # a)
+
 # the transducer dd_aaa.fst deals with the day and year parts (not changing them)
 fstconcat compiled/mmm2mm.fst compiled/dd_aaaa.fst > compiled/mix2numerical.fst
 
-
 ####################################
-# answer to b) We first concatenate the transpt2en.fst the same way as before. To translate from English to Portuguese we invert the transpt2en.fst generated and concatenate the result like before.
+# b) 
+# We first concatenate the transpt2en.fst the same way as before. 
+# To translate from English to Portuguese we invert the transpt2en.fst 
+# generated and concatenate the result like before.
+
 fstconcat compiled/transpt2en.fst compiled/dd_aaaa.fst > compiled/pt2en.fst
 
-#fstinvert compiled/transpt2en.fst > compiled/transen2pt.fst
-#fstconcat compiled/transen2pt.fst <(python3 ./scripts/compact2fst.py scripts/dd_aaaa.txt | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |  fstrmepsilon | fsttopsort) > compiled/en2pt.fst
-
-### vê se pode ficar assim
-# acho que isto chega porque os outros arcos são todos iguais
-fstinvert compiled/pt2en.fst > compiled/en2pt.fst
+fstinvert compiled/pt2en.fst | fstrmepsilon > compiled/en2pt.fst
 
 ####################################
 # c)
@@ -37,44 +35,33 @@ fstconcat compiled/month.fst compiled/slash.fst > compiled/aux1.fst
 fstconcat compiled/aux1.fst compiled/day.fst > compiled/aux2.fst
 fstconcat compiled/aux2.fst compiled/slash.fst > compiled/aux3.fst
 fstconcat compiled/aux3.fst compiled/comma.fst > compiled/aux4.fst
-fstconcat compiled/aux4.fst compiled/year.fst > compiled/datenum2text.fst
+fstconcat compiled/aux4.fst compiled/year.fst  > compiled/datenum2text.fst
 
 ####################################
-#answer to d)
-
-#compose das parted que tratam do mês (pt2en e mmm2mm)
-#fstcompose compiled/transpt2en.fst compiled/mmm2mm.fst > compiled/aux5.fst
-#fstconcat compiled/aux5.fst compiled/dd_aaaa.fst | fstrmepsilon | fsttopsort > compiled/aux6.fst
+# d)
 
 # transducer that deals with a date in portuguese
 # composition of pt2en, mix2numerical and datnum2text
-fstcompose compiled/pt2en.fst compiled/mix2numerical.fst > compiled/aux6.fst
-fstcompose compiled/aux6.fst compiled/datenum2text.fst > compiled/aux7.fst
+fstcompose compiled/pt2en.fst compiled/mix2numerical.fst | fstrmepsilon | fsttopsort > compiled/aux6.fst
+fstcompose compiled/aux6.fst compiled/datenum2text.fst | fstrmepsilon | fsttopsort > compiled/aux7.fst
 
 # transducer that deals with a date in english
 # composition of mix2numerical (which input is in english) and datenum2text
-fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst > compiled/aux8.fst
+fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst | fstrmepsilon | fsttopsort > compiled/aux8.fst
 
 # union of the tranducers that deals with the dates in english and portuguese
-fstunion compiled/aux7.fst compiled/aux8.fst > compiled/mix2text.fst
+fstunion compiled/aux7.fst compiled/aux8.fst  > compiled/mix2text.fst
 
 # union of the transducer that accepts a data in either english or portugues
 # with datenum2text
-fstunion compiled/mix2text.fst compiled/datenum2text.fst > compiled/date2text.fst
+fstunion compiled/mix2text.fst compiled/datenum2text.fst | fstrmepsilon > compiled/date2text.fst
 
-#fstunion compiled/pt2en.fst compiled/skip.fst | fstrmespsilon > compiled/tiagoaux1.fst
-#fstcompose compiled/tiagoaux1.fst compiled/mix2numerical.fst > compiled/tiagoaux2.fst
-#fstcompose compiled/tiagoaux2.fst compiled/datenum2text.fst > compiled/mix2text.fst
-#this works fine
-# fstcompose compiled/mix2numerical.fst compiled/datenum2text.fst | fstarcsort | fsttopsort| fstrmepsilon > compiled/tiagoaux5.fst
-
-
-## Delete auxiliary transducers
+####################################
+# Delete auxiliary transducers
 for i in compiled/aux*; do
 	echo "Deleting: $i"
     rm $i
 done
-
 
 # ############ generate PDFs  ############
 echo "Starting to generate PDFs"
@@ -82,8 +69,6 @@ for i in compiled/*.fst; do
 	echo "Creating image: images/$(basename $i '.fst').pdf"
    fstdraw --portrait --isymbols=syms.txt --osymbols=syms.txt $i | dot -Tpdf > images/$(basename $i '.fst').pdf
 done
-
-
 
 # ############      3 different ways of testing     ############
 # ############ (you can use the one(s) you prefer)  ############
@@ -169,7 +154,7 @@ trans=pt2en.fst
 echo "\n***********************************************************"
 echo "Testing pt2en  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "JUN/08/2018" "AGO/05/2018"; do
+for w in "JUN/08/2018" "AGO/05/2018" "JAN/05/2018" "FEV/05/2018" "MAR/05/2018" "ABR/05/2018" "MAI/05/2018" "JUL/05/2018" "SET/05/2018" "OUT/05/2018" "NOV/05/2018" "DEZ/05/2018"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
@@ -214,7 +199,7 @@ trans=datenum2text.fst
 echo "\n***********************************************************"
 echo "Testing datenum2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "08/5/2018" "6/8/2018" "1/1/2001" "1/02/2020" "08/2/2099"; do
+for w in "08/5/2018" "6/28/2018" "1/31/2001" "1/30/2020" "08/26/2099"; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
@@ -236,12 +221,11 @@ trans=date2text.fst
 echo "\n***********************************************************"
 echo "Testing date2text  (output is a string  using 'syms-out.txt')"
 echo "***********************************************************"
-for w in "08/5/2018" "JUN/08/2018" "FEB/1/2001" "DEC/02/2020" "DEZ/2/2099" "12/2/2099" "3/2/2099" "03/2/2099" "MAR/2/2099" "ABR/2/2099" "APR/2/2099"; do
+for w in "08/5/2018" "JUN/08/2018" "FEB/1/2001" "DEC/04/2020" "DEZ/5/2099" "12/6/2099" "3/8/2099" "03/12/2099" "MAR/24/2099" "ABR/31/2099" "04/30/2099" "04/31/2099" "1/1/2001" "DEZ/19/2088" "FEV/9/2077" "MAY/31/2066" "MAI/30/2050" "AGO/20/2043" "AUG/21/2039" ; do
     res=$(python3 ./scripts/word2fst.py $w | fstcompile --isymbols=syms.txt --osymbols=syms.txt | fstarcsort |
                        fstcompose - compiled/$trans | fstshortestpath | fstproject --project_type=output |
                        fstrmepsilon | fsttopsort | fstprint --acceptor --isymbols=./scripts/syms-out.txt | fst2word)
     echo "$w = $res"
 done
-
 
 echo "\nThe end"
