@@ -12,6 +12,7 @@ done
 
 # ############ CORE OF THE PROJECT  ############
 
+
 # a)
 # the transducer dd_aaa.fst deals with the day and year parts (not changing them)
 fstconcat compiled/mmm2mm.fst compiled/dd_aaaa.fst > compiled/mix2numerical.fst
