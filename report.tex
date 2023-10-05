@@ -73,7 +73,7 @@
 \vspace{0.1cm}
 
 \HRule\\ 
-{ \Large \bfseries Mini Project 1\\[0.02cm]}
+{ \Large \bfseries Mini Project 2\\[0.02cm]}
 \HRule 
 \large
 \center
@@ -84,8 +84,8 @@
 \begin{center}
 \small
 \textbf{Group and relative contribution (\%)\\[0.06in]} 
-Tiago Miranda, no. 93416 $\dotfill$ 50\%\\[0.01in]
-Nuno Machado, no. 94021 $\dotfill$ 50\%\\
+Tiago Miranda, no. 93416 $\dotfill$ ????\%\\[0.01in]
+Nuno Machado, no. 94021 $\dotfill$ ????\%\\
 
 \end{center}
 \end{minipage}  
@@ -93,7 +93,7 @@ Nuno Machado, no. 94021 $\dotfill$ 50\%\\
 \begin{minipage}{.9\linewidth}
 \begin{center}
 \small
-We chose to divide the project in the following way: Nuno started solving questions a and c and Tiago questions b and d. All transducers were tested independently by both. The work wasn't performed in parallel however, both students helped each other in every question of this project.
+We chose to ???????????.
 \end{center}
 \end{minipage} 
 
@@ -125,28 +125,9 @@ We chose to divide the project in the following way: Nuno started solving questi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{a}
 \vspace{-5mm}
-Since the years that will be used as inputs will always belong to the interval [2001-2099] we opted to only allow the numbers 2 and 0 for the first two digits of the given year. Also considering that the day and year must remain unchanged, if the day is inputted with a single digit, it'll be outputted with a single digit. 
-
-\vspace{-5mm}
-\section*{b}
-\vspace{-5mm}
-\par We opted to create an auxiliary transducer called \textbf{transpt2en.fst} that translates the month abbreviation from Portuguese to English. Then, just as in exercise a) we concatenated it with the transducer \textbf{dd\_aaaa.fst}. In order to convert a date in a mixed condensed format from English to Portuguese we inverted the \textbf{pt2en.fst} with the command \textit{fstinvert}.
+Since the years 
 
 
-\vspace{-5mm}
-\section*{c}
-\vspace{-5mm}
-Firstly we defined the transducers \textbf{day.fst}, \textbf{month.fst} and \textbf{year.fst}. Then to make the transducer \textbf{datenum2text.fst} we created two extra transducers: \textbf{comma.fst} (to add a comma) and \textbf{slash.fst} (to consider a slash and remove it). All of these were concatenated in pairs following the order: \textbf{month.fst}, \textbf{slash.fst}, \textbf{day.fst}, \textbf{slash.fst}, \textbf{comma.fst} and \textbf{year.fst}. Since the concatenations were done in pairs several auxiliary transducers were needed. After the final one was obtained all the auxiliary ones were deleted.
 
-
-\vspace{-5mm}
-\section*{d}
-\vspace{-5mm}
-\par To obtain \textbf{mix2text.fst} we performed an union (\textit{fstunion}) of 2 transducers: the composition (\textit{fstcompose}) of \textbf{pt2en.fst}, \textbf{mix2numerical.fst} and \textbf{datenum2text.fst}; and the composition of \textbf{mix2numerical.fst} and \textbf{datenum2text.fst}. To obtain \textbf{date2text.fst} we performed an union (\textit{fstunion}) of \textbf{datenum2text.fst} and \textbf{mix2text.fst}. Again, several auxiliary transducers were generated that were deleted after obtaining the desired results.
-\vfill
-
-\nocite{*}
-\addcontentsline{toc}{section}{References}
-\printbibliography
 
 \end{document}
