@@ -1,0 +1,152 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage{indentfirst}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{fancyhdr}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1.5cm, hmargin=1.2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage[mathcal]{euscript}
+\usepackage{caption}
+\usepackage{wrapfig}
+\usepackage{csquotes}
+\usepackage[T1]{fontenc}
+\usepackage{commath}
+\usepackage{empheq}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage[maxbibnames=6, sorting=none]{biblatex}
+\usepackage{multicol}
+\usepackage{newpxtext,newpxmath}
+\usepackage{fancyvrb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{eurosym}
+\usepackage{comment}
+
+\newlength\pcol
+\usepackage{siunitx}
+
+\appto{\bibsetup}{\raggedright}
+\addbibresource{references.bib}
+
+\setcounter{secnumdepth}{4}
+
+\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+
+\begin{document}
+
+%\renewcommand\thepage{}
+
+\begin{title}
+
+\vspace{0.5cm}
+
+\begin{figure}[H]
+\centering
+  \centering
+  \includegraphics[width=0.2\linewidth]{report_images/IST.png}
+\end{figure}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.2mm}}
+\center
+
+\vspace{0.05cm}
+
+\textsc{\LARGE Instituto Superior Técnico}\\[0.05cm]
+\vspace{0.53cm}
+\textsc{\Large  Natural Language}\\[0.2cm]
+
+\vspace{0.1cm}
+
+\HRule\\ 
+{ \Large \bfseries Mini Project 1\\[0.02cm]}
+\HRule 
+\large
+\center
+2023/2024 
+
+\begin{center}
+\begin{minipage}{.5\linewidth}
+\begin{center}
+\small
+\textbf{Group and relative contribution (\%)\\[0.06in]} 
+Tiago Miranda, no. 93416 $\dotfill$ 50\%\\[0.01in]
+Nuno Machado, no. 94021 $\dotfill$ 50\%\\
+
+\end{center}
+\end{minipage}  
+\end{center}
+\begin{minipage}{.9\linewidth}
+\begin{center}
+\small
+We chose to divide the project in the following way: Nuno started solving questions a and c and Tiago questions b and d. All transducers were tested independently by both. The work wasn't performed in parallel however, both students helped each other in every question of this project.
+\end{center}
+\end{minipage} 
+
+
+
+\end{title}
+
+%\newpage
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textsc{\textbf{LN}}}
+\lhead{\includegraphics[scale = 0.11]{images/IST.png}}
+\rfoot{\thepage}
+
+%\newpage
+\thispagestyle{empty}
+\renewcommand\thepage{}
+
+\renewcommand\thepage{}
+\setcounter{page}{1}
+\renewcommand\thepage{\arabic{page}}
+\pagestyle{fancy}
+
+\rfoot{\thepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{a}
+\vspace{-5mm}
+Since the years that will be used as inputs will always belong to the interval [2001-2099] we opted to only allow the numbers 2 and 0 for the first two digits of the given year. Also considering that the day and year must remain unchanged, if the day is inputted with a single digit, it'll be outputted with a single digit. 
+
+\vspace{-5mm}
+\section*{b}
+\vspace{-5mm}
+\par We opted to create an auxiliary transducer called \textbf{transpt2en.fst} that translates the month abbreviation from Portuguese to English. Then, just as in exercise a) we concatenated it with the transducer \textbf{dd\_aaaa.fst}. In order to convert a date in a mixed condensed format from English to Portuguese we inverted the \textbf{pt2en.fst} with the command \textit{fstinvert}.
+
+
+\vspace{-5mm}
+\section*{c}
+\vspace{-5mm}
+Firstly we defined the transducers \textbf{day.fst}, \textbf{month.fst} and \textbf{year.fst}. Then to make the transducer \textbf{datenum2text.fst} we created two extra transducers: \textbf{comma.fst} (to add a comma) and \textbf{slash.fst} (to consider a slash and remove it). All of these were concatenated in pairs following the order: \textbf{month.fst}, \textbf{slash.fst}, \textbf{day.fst}, \textbf{slash.fst}, \textbf{comma.fst} and \textbf{year.fst}. Since the concatenations were done in pairs several auxiliary transducers were needed. After the final one was obtained all the auxiliary ones were deleted.
+
+
+\vspace{-5mm}
+\section*{d}
+\vspace{-5mm}
+\par To obtain \textbf{mix2text.fst} we performed an union (\textit{fstunion}) of 2 transducers: the composition (\textit{fstcompose}) of \textbf{pt2en.fst}, \textbf{mix2numerical.fst} and \textbf{datenum2text.fst}; and the composition of \textbf{mix2numerical.fst} and \textbf{datenum2text.fst}. To obtain \textbf{date2text.fst} we performed an union (\textit{fstunion}) of \textbf{datenum2text.fst} and \textbf{mix2text.fst}. Again, several auxiliary transducers were generated that were deleted after obtaining the desired results.
+\vfill
+
+\nocite{*}
+\addcontentsline{toc}{section}{References}
+\printbibliography
+
+\end{document}
