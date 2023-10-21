@@ -6,3 +6,5 @@ MP2/processed_train/Xt_emb.npy
 MP2/processed_train/X_emb.npy
 MP2/processed_train/yr.npy
 MP2/processed_train/ys.npy
+MP2/processed_train/X_pp.npy
+MP2/processed_train/Xt_pp.npy
